@@ -1,37 +1,33 @@
-# streamlit main page
 import streamlit as st
 
-# 페이지 정의
+
 entry_p = st.Page("pages/entry.py", title="홈", icon="🏠", default=True)
 churn_predictor_p = st.Page("pages/churn_predictor.py", title="고객이탈예측", icon="🔮")
 risk_watchlist_p = st.Page("pages/risk_watchlist.py", title="위험리스트", icon="🚨")
 simulation_p = st.Page("pages/simulation.py", title="시뮬레이션", icon="📈")
 model_info_p = st.Page("pages/model_info.py", title="모델 정보", icon="⚪")
-# 내비게이션 실행
-pg = st.navigation({
-    "Project": [entry_p, model_info_p],
-    "Analysis Tools": [churn_predictor_p, risk_watchlist_p, simulation_p],
-})
+model_info_2_p = st.Page("pages/model_monitor.py", title="모델 정보 2", icon="🧪")
 
-# 이전 페이지와 비교
+pg = st.navigation(
+    {
+        "Project": [entry_p, model_info_p, model_info_2_p],
+        "Analysis Tools": [churn_predictor_p, risk_watchlist_p, simulation_p],
+    }
+)
+
 if "prev_page" not in st.session_state:
     st.session_state.prev_page = pg.title
 
 if st.session_state.prev_page != pg.title:
     st.session_state.prev_page = pg.title
 
-    # session_state 상태 확인 코드
-    # st.write(st.session_state)
-
-    # 1. session_state에 유지해야하는 key
-    keep_keys = ['prev_page']
-
-    # 2. session_state key 중에 keep_keys에 없는 것만 삭제
+    keep_keys = ["prev_page"]
     for key in list(st.session_state.keys()):
         if key not in keep_keys:
             del st.session_state[key]
 
-st.markdown("""
+st.markdown(
+    """
     <style>
         div.st-emotion-cache-zy6yx3 {
             padding: 3rem 1rem 10rem !important;
@@ -53,14 +49,12 @@ st.markdown("""
             padding-left: 1px !important;
             padding-right: 1px !important;
         }
-
-        /* st_folium 컨테이너 내부 여백 제거 */
         .element-container:has(iframe) {
             margin-bottom: -10px !important;
         }
     </style>
-    """
-            , unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True,
+)
 
 pg.run()
-
