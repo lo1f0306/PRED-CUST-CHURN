@@ -2,6 +2,9 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+# Pandas Styler가 처리할 수 있는 최대 셀 개수를 데이터에 맞개 늘림
+pd.set_option("styler.render.max_elements", 500000)
+
 # 1. 페이지 기본 설정
 st.set_page_config(
     page_title="위험 고객 관리",
@@ -128,14 +131,31 @@ with st.container(border=True):
     result["이탈 확률"] = (result["이탈 확률"] * 100).astype(int)
     result["월 보험료"] = result["월 보험료"].apply(lambda x: f"{int(x):,}원")
 
+    # 위험도별 색상 지정 함수
+    def highlight_risk(row):
+        style = [''] * len(row)
+        risk = row['위험도']
+        if risk == "고위험":
+            color = 'background-color: #fee2e2; color: #991b1b; font-weight: bold;'
+        elif risk == "중위험":
+            color = 'background-color: #fef3c7; color: #92400e; font-weight: bold;'
+        else:
+            color = 'background-color: #f0fdf4; color: #166534; font-weight: bold;'
+
+        # '위험도' 컬럼 위치에만 배경색+글자색 적용
+        style[row.index.get_loc('위험도')] = color
+        return style
+
+    styled_df = result.style.apply(highlight_risk, axis=1)
+
     # 최종 테이블 출력
     st.dataframe(
-        result,
+        styled_df,
         use_container_width=True,
         hide_index=True,
         column_config={
             "위험도": st.column_config.TextColumn("위험도", help="이탈 확률에 따른 분류"),
-            "이탈 확률": st.column_config.ProgressColumn("이탈 확률", format="%d%%", min_value=0, max_value=100)
+            "이탈 확률": st.column_config.ProgressColumn("이탈 확률", format="%d%%", min_value=0, max_value=100) # int+%로 출력하기 위해서 format을 d%%로 설정
         }
     )
 
