@@ -125,7 +125,7 @@ with st.container(border=True):
     result.columns = ["고객 ID", "나이", "지역", "보험 상품", "월 보험료", "이탈 확률", "위험도"]
 
     # 가독성을 위한 변환
-    result["이탈 확률"] = (result["이탈 확률"] * 100).round(1).astype(str) + "%"
+    result["이탈 확률"] = (result["이탈 확률"] * 100).astype(int)
     result["월 보험료"] = result["월 보험료"].apply(lambda x: f"{int(x):,}원")
 
     # 최종 테이블 출력
@@ -135,7 +135,7 @@ with st.container(border=True):
         hide_index=True,
         column_config={
             "위험도": st.column_config.TextColumn("위험도", help="이탈 확률에 따른 분류"),
-            "이탈 확률": st.column_config.ProgressColumn("이탈 확률", format="%s", min_value=0, max_value=100)
+            "이탈 확률": st.column_config.ProgressColumn("이탈 확률", format="%d%%", min_value=0, max_value=100)
         }
     )
 
