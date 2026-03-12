@@ -4,6 +4,7 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
+from sklearn.compose import ColumnTransformer
 from sklearn.metrics import (
     accuracy_score,
     average_precision_score,
@@ -14,6 +15,7 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
 
 
 RANDOM_STATE = 42
@@ -90,8 +92,28 @@ def add_engineered_features(feature_df: pd.DataFrame) -> pd.DataFrame:
 
 def load_model_bundle():
     model = joblib.load(get_model_path())
+    patch_loaded_pipeline(model)
     threshold = float(joblib.load(get_threshold_path()))
     return model, threshold
+
+
+def patch_loaded_pipeline(model) -> None:
+    """Patch sklearn 1.7.x persisted imputers for 1.8.x runtime compatibility."""
+    preprocess = getattr(model, "named_steps", {}).get("preprocess")
+    if preprocess is None or not hasattr(preprocess, "named_transformers_"):
+        return
+
+    for transformer in preprocess.named_transformers_.values():
+        if isinstance(transformer, Pipeline):
+            imputer = transformer.named_steps.get("imputer")
+            if imputer is not None and not hasattr(imputer, "_fill_dtype"):
+                imputer._fill_dtype = imputer.statistics_.dtype
+        elif isinstance(transformer, ColumnTransformer):
+            for nested in transformer.named_transformers_.values():
+                if isinstance(nested, Pipeline):
+                    imputer = nested.named_steps.get("imputer")
+                    if imputer is not None and not hasattr(imputer, "_fill_dtype"):
+                        imputer._fill_dtype = imputer.statistics_.dtype
 
 
 def get_train_test_split():
