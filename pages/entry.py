@@ -58,6 +58,15 @@ st.markdown("""
     color: #0f172a;
 }
 
+/* section-card 역할을 하는 컨테이너 스타일 */
+.stColumn > div > div > [data-testid="stVerticalBlock"]{
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 18px 20px;
+    margin-top: 12px;
+}
+/*
 .section-card {
     background-color: white;
     border: 1px solid #e5e7eb;
@@ -65,7 +74,7 @@ st.markdown("""
     padding: 18px 20px;
     margin-top: 12px;
 }
-
+*/
 .section-title {
     font-size: 1.6rem;
     font-weight: 800;
@@ -223,46 +232,51 @@ with col3:
 left, right = st.columns(2)
 
 with left:
-    st.markdown('<div class="section-card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">연령대별 이탈률</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="target-product-chart"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">연령대별 이탈률</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    age_churn = (
-        df.groupby("age_band")["churn_flag"]
-        .mean()
-        .mul(100)
-        .round(2)
-        .reset_index()
-        .rename(columns={"age_band": "연령대", "churn_flag": "이탈률"})
-    )
-    st.bar_chart(age_churn.set_index("연령대"))
-    st.markdown('</div>', unsafe_allow_html=True)
+        age_churn = (
+            df.groupby("age_band")["churn_flag"]
+            .mean()
+            .mul(100)
+            .round(2)
+            .reset_index()
+            .rename(columns={"age_band": "연령대", "churn_flag": "이탈률"})
+        )
+        st.bar_chart(age_churn.set_index("연령대"))
+        # st.markdown('</div>', unsafe_allow_html=True)
 
 with right:
-    st.markdown('<div class="section-card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">상품별 분포</div>', unsafe_allow_html=True)
+    with st.container(border=True): # <div class="section-card">에 해당
+        # st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.markdown('<div class="target-product-chart"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">상품별 분포</div>', unsafe_allow_html=True)
 
-    product_counts = df["policy_type"].value_counts().reset_index()
-    product_counts.columns = ["상품", "고객수"]
 
-    fig = px.pie(
-        product_counts,
-        names="상품",
-        values="고객수",
-        hole=0.35
-    )
-    fig.update_layout(margin=dict(l=10, r=10, t=10, b=10))
-    st.plotly_chart(fig, use_container_width=True)
+        product_counts = df["policy_type"].value_counts().reset_index()
+        product_counts.columns = ["상품", "고객수"]
 
-    st.markdown('</div>', unsafe_allow_html=True)
+        fig = px.pie(
+            product_counts,
+            names="상품",
+            values="고객수",
+            hole=0.35
+        )
+        fig.update_layout(margin=dict(l=10, r=10, t=10, b=10))
+        st.plotly_chart(fig, use_container_width=True)
 
-st.markdown("### 데이터 미리보기")
-preview_cols = [
-    "customer_id", "as_of_date", "region_name", "age", "age_band",
-    "policy_type", "current_premium", "churn_flag",
-    "churn_probability_true", "risk_level"
-]
-st.dataframe(df[preview_cols].head(20), use_container_width=True)
+        # st.markdown('</div>', unsafe_allow_html=True)
 
-if data_dict is not None:
-    with st.expander("컬럼 설명 보기"):
-        st.dataframe(data_dict, use_container_width=True)
+# st.markdown("### 데이터 미리보기")
+# preview_cols = [
+#     "customer_id", "as_of_date", "region_name", "age", "age_band",
+#     "policy_type", "current_premium", "churn_flag",
+#     "churn_probability_true", "risk_level"
+# ]
+# st.dataframe(df[preview_cols].sort_values(by="churn_probability_true", ascending=False).head(20), use_container_width=True)
+#
+# if data_dict is not None:
+#     with st.expander("컬럼 설명 보기"):
+#         st.dataframe(data_dict, use_container_width=True)
