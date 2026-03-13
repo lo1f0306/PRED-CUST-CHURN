@@ -3,6 +3,7 @@ import joblib
 import numpy as np
 import pandas as pd
 import streamlit as st
+from src.model_service import load_model_bundle
 
 st.set_page_config(
     page_title="고객 이탈 예측",
@@ -198,9 +199,7 @@ def load_data():
 
 @st.cache_resource
 def load_model():
-    model = joblib.load(MODEL_PATH)
-    threshold = joblib.load(THRESHOLD_PATH)
-    return model, threshold
+    return load_model_bundle()
 
 df = load_data()
 model, threshold = load_model()

@@ -6,7 +6,7 @@ from src.model_service import (
     get_corr_plot_path,
     get_threshold_plot_path,
     load_model_bundle,
-    score_all_customers,
+    load_scored_customers_file,
 )
 
 
@@ -20,7 +20,7 @@ def load_metrics():
 
 @st.cache_data
 def load_scored_data():
-    return score_all_customers()
+    return load_scored_customers_file()
 
 
 metrics = load_metrics()

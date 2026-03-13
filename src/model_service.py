@@ -4,6 +4,7 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
+import streamlit as st
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import (
     accuracy_score,
@@ -52,6 +53,15 @@ def get_corr_plot_path() -> Path:
     return get_project_root() / "model" / "target_corr_scatter.png"
 
 
+def get_scored_output_dir() -> Path:
+    return get_project_root() / "data" / "scored"
+
+
+def get_scored_output_path() -> Path:
+    return get_scored_output_dir() / "scored_customers_new_model.parquet"
+
+
+@st.cache_data
 def load_raw_data() -> pd.DataFrame:
     return pd.read_csv(get_data_path())
 
@@ -90,6 +100,7 @@ def add_engineered_features(feature_df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+@st.cache_resource
 def load_model_bundle():
     model = joblib.load(get_model_path())
     patch_loaded_pipeline(model)
@@ -130,6 +141,7 @@ def get_train_test_split():
     return raw_df, X_train, X_test, y_train, y_test
 
 
+@st.cache_data
 def evaluate_saved_model() -> dict:
     _, _, X_test, _, y_test = get_train_test_split()
     model, threshold = load_model_bundle()
@@ -206,6 +218,7 @@ def build_reason_text(row: pd.Series) -> str:
     return ", ".join(reasons[:3])
 
 
+@st.cache_data
 def score_all_customers() -> pd.DataFrame:
     raw_df = load_raw_data()
     model, threshold = load_model_bundle()
@@ -224,6 +237,23 @@ def score_all_customers() -> pd.DataFrame:
         by=["predicted_churn", "churn_probability"],
         ascending=[False, False],
     ).reset_index(drop=True)
+
+
+def refresh_scored_customers_file() -> pd.DataFrame:
+    scored_df = score_all_customers()
+    output_dir = get_scored_output_dir()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    scored_df.to_parquet(get_scored_output_path(), index=False)
+    load_scored_customers_file.clear()
+    return scored_df
+
+
+@st.cache_data
+def load_scored_customers_file() -> pd.DataFrame:
+    scored_path = get_scored_output_path()
+    if not scored_path.exists():
+        raise FileNotFoundError(f"Scored customer file not found: {scored_path}")
+    return pd.read_parquet(scored_path)
 
 
 def summarize_scored_customers(scored_df: pd.DataFrame) -> dict:

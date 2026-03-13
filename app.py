@@ -1,5 +1,12 @@
 import streamlit as st
 
+from src.model_service import refresh_scored_customers_file
+
+
+st.set_page_config(
+    page_title="Dashboard",
+    layout="wide",
+)
 
 entry_p = st.Page("pages/entry.py", title="홈", icon="🏠", default=True)
 churn_predictor_p = st.Page("pages/churn_predictor.py", title="고객이탈예측", icon="🔮")
@@ -21,15 +28,15 @@ if "prev_page" not in st.session_state:
 if st.session_state.prev_page != pg.title:
     st.session_state.prev_page = pg.title
 
-    keep_keys = ["prev_page"]
+    keep_keys = ["prev_page", "shared_model_cache_warmed"]
     for key in list(st.session_state.keys()):
         if key not in keep_keys:
             del st.session_state[key]
 
-st.set_page_config(
-    page_title="Dashboard",
-    layout="wide"
-)
+if "shared_model_cache_warmed" not in st.session_state:
+    with st.spinner("모델 예측 결과를 준비하는 중입니다..."):
+        refresh_scored_customers_file()
+    st.session_state.shared_model_cache_warmed = True
 
 st.markdown(
     """

@@ -1,5 +1,4 @@
 import sklearn
-import joblib
 import streamlit
 import pandas
 
@@ -9,12 +8,12 @@ import pandas
 from pathlib import Path
 import platform
 
-import joblib
 import numpy as np
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
+from src.model_service import load_model_bundle
 
 
 # ==============================
@@ -126,9 +125,7 @@ def load_data():
 
 @st.cache_resource
 def load_model():
-    model = joblib.load(MODEL_PATH)
-    threshold = joblib.load(THRESHOLD_PATH)
-    return model, threshold
+    return load_model_bundle()
 
 # ==============================
 # 노트북 파생변수 그대로 사용
