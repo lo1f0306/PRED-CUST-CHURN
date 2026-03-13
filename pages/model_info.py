@@ -54,6 +54,14 @@ st.markdown(
     font-weight: 800;
     color: #0f172a;
 }
+/* section-card 역할을 하는 컨테이너 스타일 */
+.stColumn > div > div > [data-testid="stVerticalBlock"]{
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 18px 20px;
+    margin-top: 12px;
+}
 .section-card {
     background-color: white;
     border: 1px solid #e5e7eb;
@@ -82,6 +90,14 @@ div[data-testid="stSidebarNav"]::before {
 """,
     unsafe_allow_html=True,
 )
+@st.cache_data
+def load_metrics():
+    return evaluate_saved_model()
+
+
+@st.cache_data
+def load_scored_data():
+    return score_all_customers()
 
 
 @st.cache_data
