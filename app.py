@@ -67,6 +67,72 @@ st.markdown(
         .element-container:has(iframe) {
             margin-bottom: -10px !important;
         }
+        .block-container {
+            padding-top: 1.2rem;
+            padding-bottom: 2rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+        .main-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 0.2rem;
+        }
+        .sub-title {
+            font-size: 1.05rem;
+            color: #64748b;
+            margin-bottom: 1.5rem;
+        }
+        .card {
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            padding: 20px 22px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+        .card-title {
+            font-size: 1rem;
+            color: #475569;
+            margin-bottom: 0.6rem;
+        }
+        .card-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        /* section-card 역할을 하는 컨테이너 스타일 */
+        .stColumn > div > div > [data-testid="stVerticalBlock"]{
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            padding: 18px 20px;
+            margin-top: 12px;
+        }
+        .section-card {
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            padding: 18px 20px;
+            margin-top: 12px;
+        }
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+        div[data-testid="stSidebarNav"]::before {
+            content: "보험 이탈 예측\\A고객 관리 시스템";
+            white-space: pre-line;
+            display: block;
+            font-size: 2rem;
+            line-height: 1.5;
+            font-weight: 800;
+            color: #2563eb;
+            margin-bottom: 1.2rem;
+            padding-left: 0.2rem;
+        }
     </style>
     """,
     unsafe_allow_html=True,
