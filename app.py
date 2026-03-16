@@ -51,16 +51,21 @@ st.markdown(
     div.st-emotion-cache-1frkdi4 {
         margin-bottom: -1.5rem !important;
     }
-    div.stButton > button p {
-        white-space: nowrap !important;
-        font-size: 14px !important;
-    }
-    div.stButton > button {
+    .stButton > button {
         min-width: 35px !important;
         width: 100% !important;
         padding: 0px !important;
         margin: 0px 2px !important;
+        background-color: #ff4b4b; !important;
     }
+    .stFormSubmitButton > button {
+        background: #ff4b4b; !important;
+    }
+    div.stButton > button p {
+        white-space: nowrap !important;
+        font-size: 14px !important;
+    }
+    
     [data-testid="column"] {
         padding-left: 1px !important;
         padding-right: 1px !important;
@@ -126,6 +131,7 @@ st.markdown(
         border-left: 5px solid #034EA2;
         padding-left: 10px;
     }
+    
     div[data-testid="stSidebarNav"]::before {
         content: "보험 이탈 예측\\A고객 관리 시스템";
         white-space: pre-line;
