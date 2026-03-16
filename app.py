@@ -141,6 +141,15 @@ st.markdown(
         min-width: 320px;
         /*background-color: #ACBAC4;*/
     }
+    section[data-testid="stSidebar"][aria-expanded="false"] {
+        min-width: 0 !important;
+        width: 0 !important;
+        flex: 0 0 0 !important;
+    }
+    section[data-testid="stSidebar"][aria-expanded="false"] div[data-testid="stSidebarNav"]::before {
+        display: none !important;
+        content: none !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
