@@ -76,7 +76,8 @@ data_dict = load_data_dictionary()
 
 total_customers = int(len(df))
 predicted_churn_count = int(df["predicted_churn"].sum())
-predicted_churn_rate = (predicted_churn_count / total_customers) * 100 if total_customers else 0
+critical_count = int((df["risk_tier"] == "critical").sum())
+critical_rate = (critical_count / total_customers) * 100 if total_customers else 0
 high_risk_count = int(df["risk_tier"].isin(["high", "critical"]).sum())
 stable_count = int((df["risk_tier"] == "stable").sum())
 
@@ -98,8 +99,8 @@ with col2:
     st.markdown(
         f"""
         <div class="card">
-            <div class="card-title">예측 이탈률</div>
-            <div class="card-value">{predicted_churn_rate:.1f}%</div>
+            <div class="card-title">즉시 대응 고객 비율</div>
+            <div class="card-value">{critical_rate:.1f}%</div>
         </div>
         """,
         unsafe_allow_html=True,
