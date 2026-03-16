@@ -45,7 +45,7 @@ st.markdown(
     .block-container { padding-top: 1.5rem; max-width: 1380px; }
     .report-title { font-size: 2.2rem; font-weight: 800; color: #0f172a; margin-bottom: 0.2rem; }
     .report-subtitle { color: #64748b; font-size: 1rem; margin-bottom: 1.5rem; }
-    .section-title { font-size: 1.6rem; font-weight: 800; color: #1e293b; margin: 2.5rem 0 1.2rem 0; padding-left: 0.5rem; border-left: 5px solid #3b82f6; }
+    .section-title { font-size: 1.6rem; font-weight: 800; color: #1e293b; margin: 2.5rem 0 1.2rem 0; padding-left: 0.5rem; border-left: 5px solid #034EA2; }
     .card {
     background: white;
     border-radius: 22px;
