@@ -10,15 +10,15 @@ st.set_page_config(
 
 entry_p = st.Page("pages/entry.py", title="홈", icon="🏠", default=True)
 churn_predictor_p = st.Page("pages/churn_predictor.py", title="고객이탈예측", icon="🔮")
-risk_watchlist_p = st.Page("pages/risk_watchlist.py", title="위험리스트", icon="🚨")
+risk_watchlist_p = st.Page("pages/risk_watchlist.py", title="위험고객관리", icon="🚨")
 simulation_p = st.Page("pages/simulation_kys.py", title="시뮬레이션", icon="📈")
-model_info_p = st.Page("pages/model_info.py", title="모델 정보", icon="⚪")
-model_info_2_p = st.Page("pages/model_monitor.py", title="모델 정보 2", icon="🧪")
+model_info_p = st.Page("pages/model_info.py", title="모델성능 대시보드", icon="⚪")
+model_info_2_p = st.Page("pages/model_monitor.py", title="자동분석 레포트", icon="🧪")
 
 pg = st.navigation(
     {
-        "Project": [entry_p, model_info_p, model_info_2_p],
-        "Analysis Tools": [churn_predictor_p, risk_watchlist_p, simulation_p],
+        "": [entry_p, model_info_p],
+        "예측/시뮬레이션": [model_info_2_p,churn_predictor_p, risk_watchlist_p, simulation_p],
     }
 )
 

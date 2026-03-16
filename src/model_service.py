@@ -46,11 +46,11 @@ def get_threshold_path() -> Path:
 
 
 def get_threshold_plot_path() -> Path:
-    return get_project_root() / "model" / "threshold_analysis_new.png"
+    return get_project_root() / "images" / "model" / "threshold_analysis_new.png"
 
 
 def get_corr_plot_path() -> Path:
-    return get_project_root() / "model" / "target_corr_scatter.png"
+    return get_project_root() / "images" / "model" / "target_corr_scatter.png"
 
 
 def get_scored_output_dir() -> Path:

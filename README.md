@@ -31,22 +31,22 @@ Team RETURNS는 보험사의 유지율(Retention Rate)을 극대화하기 위해
 <table align="center">
   <tr>
     <td align="center" width="120">
-      <img src=".images/readme/kys.webp" style="width: 100px; height: 120px; min-width: 100px; min-height: 120px; object-fit: cover;">
+      <img src="./images/readme/kys.webp" style="width: 100px; height: 120px; min-width: 100px; min-height: 120px; object-fit: cover;">
     </td>
     <td align="center" width="120">
-      <img src=".images/readme/pej.jpeg" style="width: 100px; height: 120px; min-width: 100px; min-height: 120px; object-fit: cover;">
+      <img src="./images/readme/pej.jpeg" style="width: 100px; height: 120px; min-width: 100px; min-height: 120px; object-fit: cover;">
     </td>
     <td align="center" width="120">
-      <img src=".images/readme/boo.webp" style="width: 100px; height: 120px; min-width: 100px; min-height: 120px; object-fit: cover;">
+      <img src="./images/readme/boo.webp" style="width: 100px; height: 120px; min-width: 100px; min-height: 120px; object-fit: cover;">
     </td>
     <td align="center" width="120">
-      <img src=".images/readme/lsh.jpeg" style="width: 100px; height: 120px; min-width: 100px; min-height: 120px; object-fit: cover;">
+      <img src="./images/readme/lsh.jpeg" style="width: 100px; height: 120px; min-width: 100px; min-height: 120px; object-fit: cover;">
     </td>
     <td align="center" width="120">
-      <img src=".images/readme/hh.jpeg" style="width: 100px; height: 120px; min-width: 100px; min-height: 120px; object-fit: cover;">
+      <img src="./images/readme/hh.jpeg" style="width: 100px; height: 120px; min-width: 100px; min-height: 120px; object-fit: cover;">
     </td>
     <td align="center" width="120">
-      <img src=".images/readme/dori.jpg" style="width: 100px; height: 120px; min-width: 100px; min-height: 120px; object-fit: cover;">
+      <img src="./images/readme/dori.jpg" style="width: 100px; height: 120px; min-width: 100px; min-height: 120px; object-fit: cover;">
     </td>
   </tr>
   <tr>
