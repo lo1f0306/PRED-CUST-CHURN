@@ -43,14 +43,19 @@ st.markdown('<div class="section-card">', unsafe_allow_html=True)
 g_col1, g_col2, g_col3 = st.columns(3)
 
 with g_col1:
+    # 💡 Recall: #C5E1A5 (파스텔 연두) 적용
     st.plotly_chart(draw_gauge_chart(metrics["recall"], "Recall (재현율)"), use_container_width=True)
     st.caption(" 실제 이탈 고객의 약 90%를 탐지합니다")
+
 with g_col2:
+    # ROC-AUC는 기존 그린톤 유지 (혹은 원하는 다른 색상으로 변경 가능)
     st.plotly_chart(draw_gauge_chart(metrics["roc_auc"], "ROC-AUC (분별력)", "#10b981"), use_container_width=True)
     st.caption("이탈자와 유지자를 구분하는 종합 성능")
+
 with g_col3:
-    st.plotly_chart(draw_gauge_chart(metrics["f1"], "F1-Score (균형)", "#f59e0b"), use_container_width=True)
+    st.plotly_chart(draw_gauge_chart(metrics["f1"], "F1-Score (균형)", color="#f59e0b"), use_container_width=True)
     st.caption("정밀도와 재현율의 조화 평균")
+
 st.markdown('</div>', unsafe_allow_html=True)
 
 # --- 섹션 2: 분포 및 분류 결과 시각화 ---
@@ -62,10 +67,10 @@ with col_left:
 
     # 1. 컬러정의(위험리스트랑 최대한 맞춤)
     custom_pastel_map = {
-        "즉시 대응": "#FFB7B2",
-        "고위험": "#FFD1DC",
-        "관찰 필요": "#FFF9C4",
-        "안정": "#C5E1A5"
+        "즉시 대응": "#FF4848",
+        "고위험": "#9DDAC6",
+        "관찰 필요": "#FFD371",
+        "안정": "#F7E6AD"
     }
 
     tier_counts = scored_df["risk_tier_ko"].value_counts().reset_index()
@@ -105,7 +110,7 @@ with col_right:
                        labels=dict(x="예측값", y="실제값", color="인원 수"),
                        x=['유지 예측', '이탈 예측'],
                        y=['실제 유지', '실제 이탈'],
-                       text_auto=True, color_continuous_scale='Blues')
+                       text_auto=True, color_continuous_scale='YlGn')
     st.plotly_chart(fig_cm, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
