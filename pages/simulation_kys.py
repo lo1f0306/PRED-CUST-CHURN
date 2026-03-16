@@ -711,10 +711,6 @@ st.success(
     f"예상 방어 매출은 {saved_value:,.0f}원이며, 단일 정책 기준으로는 '{top_policy}'의 효과가 가장 크게 나타났습니다."
 )
 
-print("sklearn:", sklearn.__version__)
-print("joblib:", joblib.__version__)
-print("streamlit:", streamlit.__version__)
-print("pandas:", pandas.__version__)
 
 # ==============================
 # 변화 확인
