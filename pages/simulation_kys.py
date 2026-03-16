@@ -634,17 +634,50 @@ if run_simulation:
     st.markdown('<div class="section-title">📊 시뮬레이션 결과</div>', unsafe_allow_html=True)
     col1, col2, col3, col4, col5 = st.columns(5)
 
+    # 1. 모든 Metric 카드 크기 같게 CSS 적용
+    st.markdown("""
+    <style>
+        /* 각 메트릭 컨테이너를 감싸는 div의 너비를 통일 */
+        [data-testid="column"] {
+            width: 100% !important;
+            flex: 1 1 calc(20% - 1rem) !important;
+            min-width: 150px !important;
+        }
+
+        /* 메트릭 카드 자체의 스타일 (테두리와 패딩으로 크기 시각화) */
+        [data-testid="stMetric"] {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            padding: 15px 20px;
+            border-radius: 12px;
+            height: 130px; /* 높이까지 고정해서 사각형 유지 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # 2. 5개 컬럼 생성
+    col1, col2, col3, col4, col5 = st.columns(5)
+
     with col1:
-        st.metric("현재 이탈률", f'{base_result["churn_rate"]:.2f}%')
+        st.metric("현재 이탈률", f'{base_result["churn_rate"]:.2f}%', delta=None)
+
     with col2:
-        st.metric("개선 후 이탈률", f'{sim_result["churn_rate"]:.2f}%', f"{-improvement:.2f}%p", delta_color="inverse")
+        st.metric("개선 후 이탈률", f'{sim_result["churn_rate"]:.2f}%',
+                  f"{-improvement:.2f}%p", delta_color="inverse")
+
     with col3:
         st.metric("평균 확률 감소", f'{sim_result["avg_prob"]:.2f}%',
                   f'{sim_result["avg_prob"] - base_result["avg_prob"]:.2f}%p', delta_color="inverse")
+
     with col4:
-        st.metric("방어 고객 수", f'{saved_customers:,}명')
+        st.metric("방어 고객 수", f'{saved_customers:,}명', f"+{saved_customers:,}명")
+
     with col5:
-        st.metric("예상 방어 매출(백만 원)", f"{saved_value / 1000000:,.0f}")
+        saved_m = saved_value / 1000000
+        st.metric("예상 방어 매출", f"{saved_m:,.0f}백만원", f"+{saved_m:,.0f}백만원")
 
     # --- 시각화: 정책별 효과 비교 (주석 해제 및 활성화) ---
     st.markdown('<div class="section-title">📌 정책별 기여도 분석</div>', unsafe_allow_html=True)
@@ -713,31 +746,6 @@ except Exception as e:
         st.write("threshold:", threshold)
     st.stop()
 
-# ==============================
-# KPI
-# ==============================
-st.markdown('<div class="section-title">📊 시뮬레이션 결과</div>', unsafe_allow_html=True)
-
-col1, col2, col3, col4, col5 = st.columns(5)
-
-with col1:
-    st.metric("현재 예상 이탈률", f'{base_result["churn_rate"]:.2f}%')
-
-with col2:
-    st.metric("시뮬레이션 후 이탈률", f'{sim_result["churn_rate"]:.2f}%', f"{-improvement:.2f}%p")
-
-with col3:
-    avg_prob_delta = sim_result["avg_prob"] - base_result["avg_prob"]
-    st.metric("평균 이탈확률", f'{sim_result["avg_prob"]:.2f}%', f"{avg_prob_delta:.2f}%p")
-
-with col4:
-    churn_count_delta = sim_result["churn_count"] - base_result["churn_count"]
-    st.metric("이탈 고객 수", f'{sim_result["churn_count"]:,}명', f"{churn_count_delta:,}명")
-
-with col5:
-    st.metric("예상 방어 매출", f"{saved_value:,.0f}원")
-
-st.divider()
 
 # ==============================
 # 그래프 영역
