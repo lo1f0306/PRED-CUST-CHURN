@@ -1,186 +1,98 @@
 import pandas as pd
 import streamlit as st
 
+import plotly.express as px
+import plotly.graph_objects as go
+
 from src.model_service import (
     evaluate_saved_model,
-    get_corr_plot_path,
-    get_threshold_plot_path,
     load_model_bundle,
     load_scored_customers_file,
 )
 
+# 1. 게이지 차트 함수 (크기 최적화)
+def draw_gauge_chart(value, title, color="#2563eb"):
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=value * 100,
+        title={'text': title, 'font': {'size': 18}},
+        gauge={
+            'axis': {'range': [0, 100], 'tickwidth': 1},
+            'bar': {'color': color},
+            'steps': [
+                {'range': [0, 50], 'color': "#f1f5f9"},
+                {'range': [50, 80], 'color': "#e2e8f0"},
+                {'range': [80, 100], 'color': "#cbd5e1"}
+            ],
+        }
+    ))
+    fig.update_layout(height=250, margin=dict(l=20, r=20, t=50, b=20))
+    return fig
 
-st.set_page_config(
-    page_title="모델 정보",
-    page_icon="⚪",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
-st.markdown(
-    """
-<style>
-.block-container {
-    padding-top: 1.2rem;
-    padding-bottom: 2rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
-}
-.main-title {
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin-bottom: 0.2rem;
-}
-.sub-title {
-    font-size: 1.05rem;
-    color: #64748b;
-    margin-bottom: 1.5rem;
-}
-.card {
-    background-color: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 18px;
-    padding: 20px 22px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-}
-.card-title {
-    font-size: 1rem;
-    color: #475569;
-    margin-bottom: 0.6rem;
-}
-.card-value {
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: #0f172a;
-}
-/* section-card 역할을 하는 컨테이너 스타일 */
-.stColumn > div > div > [data-testid="stVerticalBlock"]{
-    background-color: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 18px;
-    padding: 18px 20px;
-    margin-top: 12px;
-}
-.section-card {
-    background-color: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 18px;
-    padding: 18px 20px;
-    margin-top: 12px;
-}
-.section-title {
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin-bottom: 0.5rem;
-}
-div[data-testid="stSidebarNav"]::before {
-    content: "보험 이탈 예측\\A고객 관리 시스템";
-    white-space: pre-line;
-    display: block;
-    font-size: 2rem;
-    line-height: 1.5;
-    font-weight: 800;
-    color: #2563eb;
-    margin-bottom: 1.2rem;
-    padding-left: 0.2rem;
-}
-</style>
-""",
-    unsafe_allow_html=True,
-)
+# 데이터 로드
 metrics = evaluate_saved_model()
 scored_df = load_scored_customers_file()
-model, threshold = load_model_bundle()
+_, threshold = load_model_bundle()
 
-st.markdown('<div class="main-title">모델 정보</div>', unsafe_allow_html=True)
-st.markdown(
-    '<div class="sub-title">현재 앱에서 사용하는 new 모델의 요약 정보와 핵심 지표입니다.</div>',
-    unsafe_allow_html=True,
-)
+st.markdown('<div class="main-title">📊 모델 성능 대시보드</div>', unsafe_allow_html=True)
 
-metric_cols = st.columns(4)
-metric_cols[0].markdown(
-    f'<div class="card"><div class="card-title">모델 파일</div><div class="card-value" style="font-size:1.3rem;">churn_model_new.pkl</div></div>',
-    unsafe_allow_html=True,
-)
-metric_cols[1].markdown(
-    f'<div class="card"><div class="card-title">모델 계열</div><div class="card-value" style="font-size:1.4rem;">HistGradientBoosting</div></div>',
-    unsafe_allow_html=True,
-)
-metric_cols[2].markdown(
-    f'<div class="card"><div class="card-title">Threshold</div><div class="card-value">{threshold:.3f}</div></div>',
-    unsafe_allow_html=True,
-)
-metric_cols[3].markdown(
-    f'<div class="card"><div class="card-title">평가 데이터 수</div><div class="card-value">{metrics["test_size"]:,}</div></div>',
-    unsafe_allow_html=True,
-)
 
-left, right = st.columns([1.1, 1])
+# --- 섹션 1: 핵심 성과 게이지 (Recall 강조) ---
+st.markdown('<div class="section-card">', unsafe_allow_html=True)
+st.markdown('<div class="section-title">핵심 성능 지표 (Core Metrics)</div>', unsafe_allow_html=True)
+g_col1, g_col2, g_col3 = st.columns(3)
 
-with left:
+with g_col1:
+    st.plotly_chart(draw_gauge_chart(metrics["recall"], "Recall (재현율)"), use_container_width=True)
+    st.caption("실제 이탈자 중 모델이 찾아낸 비율 (가장 중요)")
+with g_col2:
+    st.plotly_chart(draw_gauge_chart(metrics["roc_auc"], "ROC-AUC (분별력)", "#10b981"), use_container_width=True)
+    st.caption("이탈자와 유지자를 구분하는 종합 성능")
+with g_col3:
+    st.plotly_chart(draw_gauge_chart(metrics["f1"], "F1-Score (균형)", "#f59e0b"), use_container_width=True)
+    st.caption("정밀도와 재현율의 조화 평균")
+st.markdown('</div>', unsafe_allow_html=True)
+
+# --- 섹션 2: 분포 및 분류 결과 시각화 ---
+col_left, col_right = st.columns(2)
+
+with col_left:
     st.markdown('<div class="section-card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">성능 요약</div>', unsafe_allow_html=True)
-    summary_df = pd.DataFrame(
-        [
-            ("Accuracy", round(metrics["accuracy"], 4)),
-            ("Precision", round(metrics["precision"], 4)),
-            ("Recall", round(metrics["recall"], 4)),
-            ("F1", round(metrics["f1"], 4)),
-            ("ROC AUC", round(metrics["roc_auc"], 4)),
-            ("PR AUC", round(metrics["pr_auc"], 4)),
-        ],
-        columns=["지표", "값"],
-    )
-    st.dataframe(summary_df, width="stretch", hide_index=True)
+    st.markdown('<div class="section-title">예측 등급 분포</div>', unsafe_allow_html=True)
+    tier_counts = scored_df["risk_tier_ko"].value_counts().reset_index()
+    tier_counts.columns = ["위험 등급", "고객 수"]
+    fig_pie = px.pie(tier_counts, names="위험 등급", values="고객 수", hole=0.4,
+                     color_discrete_sequence=px.colors.qualitative.Pastel)
+    st.plotly_chart(fig_pie, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
+with col_right:
     st.markdown('<div class="section-card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">운영 기준 해석</div>', unsafe_allow_html=True)
-    predicted_cnt = int(scored_df["predicted_churn"].sum())
-    total_cnt = int(len(scored_df))
-    st.markdown(
-        f"""
-- 현재 앱에서 사용하는 모델은 `new` 모델입니다.
-- 전체 고객 `{total_cnt:,}`명 중 `{predicted_cnt:,}`명이 threshold `{threshold:.4f}` 기준으로 이탈 예상 고객으로 분류됩니다.
-- 현재 설정은 재현율을 높게 가져가는 방향이라 예측 이탈 고객 수가 상대적으로 많게 나옵니다.
-"""
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with right:
-    st.markdown('<div class="section-card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">분류 결과 요약</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">분류 결과 (Confusion Matrix)</div>', unsafe_allow_html=True)
     cm = metrics["confusion_matrix"]
-    cm_df = pd.DataFrame(
-        cm,
-        index=["실제 유지", "실제 이탈"],
-        columns=["예측 유지", "예측 이탈"],
-    )
-    st.dataframe(cm_df, width="stretch")
+    # 히트맵으로 시각화
+    fig_cm = px.imshow(cm,
+                       labels=dict(x="예측값", y="실제값", color="인원 수"),
+                       x=['유지 예측', '이탈 예측'],
+                       y=['실제 유지', '실제 이탈'],
+                       text_auto=True, color_continuous_scale='Blues')
+    st.plotly_chart(fig_cm, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="section-card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">운영 산출물</div>', unsafe_allow_html=True)
-    output_df = pd.DataFrame(
-        [
-            ("위험 등급 컬럼", "risk_tier / risk_tier_ko"),
-            ("우선순위 컬럼", "coupon_priority"),
-            ("설명 컬럼", "prediction_reason"),
-            ("확률 컬럼", "churn_probability"),
-        ],
-        columns=["항목", "내용"],
-    )
-    st.dataframe(output_df, width="stretch", hide_index=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+# --- 섹션 3: 임계값 및 변수 중요도 (이미지 호출) ---
+st.markdown('<div class="section-card">', unsafe_allow_html=True)
+st.markdown('<div class="section-title">모델 판단 근거 분석</div>', unsafe_allow_html=True)
+img_col1, img_col2 = st.columns(2)
 
-plot_cols = st.columns(2)
-threshold_plot = get_threshold_plot_path()
-corr_plot = get_corr_plot_path()
+# 기존에 생성된 분석 그래프 이미지 표시
+from src.model_service import get_threshold_plot_path, get_corr_plot_path
+t_path = get_threshold_plot_path()
+c_path = get_corr_plot_path()
 
-if threshold_plot.exists():
-    plot_cols[0].image(str(threshold_plot), caption="Threshold 분석", width="stretch")
-if corr_plot.exists():
-    plot_cols[1].image(str(corr_plot), caption="상관관계 시각화", width="stretch")
+with img_col1:
+    if t_path.exists():
+        st.image(str(t_path), caption="Threshold 최적화 분석 (Precision-Recall Curve)")
+with img_col2:
+    if c_path.exists():
+        st.image(str(c_path), caption="주요 피처와 타겟 간 상관관계")
+st.markdown('</div>', unsafe_allow_html=True)
